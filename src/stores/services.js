@@ -1,13 +1,15 @@
 import { ref, onMounted } from "vue"
 import { defineStore } from "pinia"
-import ServicesAPI from "@/api/ServicesAPI" 
+import ServicesAPI from "@/api/ServicesAPI"
 
 export const useServicesStore = defineStore("services", () => {
 
-    onMounted(async() => { // axios con async await
+    const services = ref([])
+
+    onMounted(async() => { // axios con async await (v417)
         try {
             const { data } = await ServicesAPI.all()
-            console.log(data);
+            services.value = data
         } catch(error) {
             console.log(error);
         }
@@ -17,7 +19,8 @@ export const useServicesStore = defineStore("services", () => {
         // vars/consts
 
         // states
-
+        services,
+        
         // getters
 
         // actions
