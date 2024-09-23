@@ -6,6 +6,7 @@ export default {
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
     "./node_modules/vue-tailwind-datepicker/**/*.js", // compilamos los estilos de Vue Tailwind Datepicker (v425)
+    "./formkit.config.js", // sumamos a la compilacion de tailwind los estilos que definamos en el archivo de configuracion de formkit (v449)
   ],
   // theme: {
   //   extend: {},
