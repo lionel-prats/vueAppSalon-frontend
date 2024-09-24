@@ -12,7 +12,7 @@
         try {
             const { data } = await AuthApi.register(formData)
 
-            toast.open({ // notificacion Vue Toast Notification (v453)
+            toast.open({ // notificacion de success Vue Toast Notification (v453)
                 message: data.msg,
                 type: "success",
             })
@@ -22,7 +22,7 @@
             reset("registerForm")
             
         } catch (error) {
-            toast.open({ // notificacion Vue Toast Notification (v455)
+            toast.open({ // notificacion de error Vue Toast Notification (v455)
                 message: error.response.data.msg,
                 type: "error",
             })
