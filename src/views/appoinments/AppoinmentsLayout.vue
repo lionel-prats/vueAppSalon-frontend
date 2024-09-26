@@ -16,9 +16,10 @@
                     >Cerrar Sesión</button>
                 </div>
                 <nav class="flex gap-2 justify-end">
-                    <button
+                    <RouterLink
                         class="p-3 text-gray-200 uppercase text-xs font-black rounded-lg"
-                    >Mis Citas</button>
+                        :to="{ name: 'my-appoinments'}"
+                    >Mis Citas</RouterLink>
                     <RouterLink 
                         class="p-3 text-gray-200 uppercase text-xs font-black rounded-lg bg-blue-700"
                         :to="{ name: 'new-appoinment'}"

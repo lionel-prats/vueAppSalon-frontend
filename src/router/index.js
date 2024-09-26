@@ -10,13 +10,21 @@ const router = createRouter({
       name: "home",
       component: HomeView
     },
+
+    // URLs privadas
     {
       path: "/reservaciones",
       name: "appoinments",
       component: AppoinmentsLayout, 
+      meta: { requiresAuth: true }, // Route Meta Field (guard de navegación para restringir el acceso a esta url y a todas las url hijas) (v465)
       children: [ 
         {
-          path: "nueva",
+          path: "", // http://localhost:5173/reservaciones (v464)
+          name: "my-appoinments",
+          component: () => import("@/views/appoinments/MyAppoinmentsView.vue"), 
+        },
+        {
+          path: "nueva", // http://localhost:5173/reservaciones/nueva
           component: () => import("@/views/appoinments/NewAppoinmentLayout.vue"), 
           children: [
             {
@@ -25,7 +33,7 @@ const router = createRouter({
               component: () => import("@/views/appoinments/ServicesView.vue"), 
             },
             {
-              path: "detalles",
+              path: "detalles", // http://localhost:5173/reservaciones/nueva/detalles
               name: "appoinment-details",
               component: () => import("@/views/appoinments/AppoinmentView.vue"), 
             },
@@ -33,6 +41,8 @@ const router = createRouter({
         },
       ]
     },
+
+    // URLs publicas
     {
       path: "/auth",
       name: "auth",
@@ -49,13 +59,34 @@ const router = createRouter({
           component: () => import("@/views/auth/ConfirmAccountView.vue"),
         },
         {
-          path: "login",
+          path: "login", // http://localhost:5173/auth/login
           name: "login",
           component: () => import("@/views/auth/LoginView.vue"),
         },
       ]
     },
   ]
+})
+
+// funcion para manejar el acceso a las diferentes rutas de la aplicacion (v465)
+router.beforeEach( async(to, from, next) => {
+  // to = pagina a donde vamos
+  // from = de donde venimos
+  // next = 
+
+  // to.matched.some( (url) => url.meta.requiresAuth ) retornará true si la URL a la que se esta queriendo acceder desde el navegador tiene Route Meta Field requiresAuth definido, y en caso de estarlo, si es === true. Retornará false en caso contrario (v465)
+  const requiresAuth = to.matched.some( (url) => url.meta.requiresAuth )
+  
+  if(requiresAuth) { // si true, entonces la url a la que se esta queriendo acceder desde el navegador esta protegida, hacemos una request al backend
+    try {
+
+    } catch (error) {
+
+    }
+  } else { // si false, la url a la que se esta queriendo acceder desde el navegador no esta protegida, mostramos la vista
+    
+  }
+  next()
 })
 
 export default router

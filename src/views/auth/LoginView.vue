@@ -1,18 +1,16 @@
 <script setup>
     import { inject } from "vue"
+    import { useRouter } from "vue-router"
     import AuthApi from "@/api/AuthAPI"
 
     const toast = inject("toast")
+    const router = useRouter()
 
     const handleSubmit = async (formData) => {
         try {
-            const { data } = await AuthApi.login(formData)
-
-            toast.open({ // notificacion de success Vue Toast Notification (v460)
-                message: data.msg,
-                type: "success",
-            })
-            
+            const { data: { token } } = await AuthApi.login(formData) // "doble destructuring" como forma de acceder al token en una sola linea (v463)
+            localStorage.setItem("AUTH_TOKEN", token);
+            router.push({ name: "my-appoinments" })
         } catch (error) {
             toast.open({ // notificacion de error Vue Toast Notification (v460)
                 message: error.response.data.msg,
