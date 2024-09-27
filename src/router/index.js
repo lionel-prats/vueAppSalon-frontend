@@ -75,6 +75,7 @@ router.beforeEach( async(to, from, next) => {
   // next = 
 
   // to.matched.some( (url) => url.meta.requiresAuth ) retornará true si la URL a la que se esta queriendo acceder desde el navegador tiene Route Meta Field requiresAuth definido, y en caso de estarlo, si es === true. Retornará false en caso contrario (v465)
+  // para definir un Route Meta Field requiresAuth en una ruta, al objeto de la ruta le agregamos el key: value -> meta: { requiresAuth: true } (v465)
   const requiresAuth = to.matched.some( (url) => url.meta.requiresAuth )
   
   if(requiresAuth) { // si true, entonces la url a la que se esta queriendo acceder desde el navegador esta protegida, hacemos una request al backend
