@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import AppoinmentsLayout from '@/views/appoinments/AppoinmentsLayout.vue'
+import AuthAPI from "@/api/AuthAPI"
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -79,15 +81,21 @@ router.beforeEach( async(to, from, next) => {
   const requiresAuth = to.matched.some( (url) => url.meta.requiresAuth )
   
   if(requiresAuth) { // si true, entonces la url a la que se esta queriendo acceder desde el navegador esta protegida, hacemos una request al backend
-    try {
-
-    } catch (error) {
-
-    }
-  } else { // si false, la url a la que se esta queriendo acceder desde el navegador no esta protegida, mostramos la vista
     
+    // bloque para hacer la peticion GET a http://localhost:4000/api/auth/ incluyendo el token que tenemos almacenado en localStorage, para definir si permitimos o no el acceso a la ruta a la que se esta queriendo acceder desde el navegador (v470) 
+    try {
+      // si el backend nos retorno un status 200 con los datos del usuario, significa que todo esta bien, asi que permitimos el acceso a la ruta a la que se esta queriendo acceder desde el navegador (v470)
+      await AuthAPI.auth()
+      next()
+    } catch {
+      // si la ejecucion entra en el catch, significa que el backend nos retrorno un 403 (forbidden) entonces redirigimos al usuario al form de login
+      next({ name: "login" })
+    }
+    // fin bloque
+
+  } else { // si false, la url a la que se esta queriendo acceder desde el navegador no esta protegida, mostramos la vista
+    next()
   }
-  next()
 })
 
 export default router

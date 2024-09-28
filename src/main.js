@@ -21,7 +21,7 @@ const $toast = useToast({
 
 const app = createApp(App)
 
-app.provide("toast", $toast) // guardamos en un provide la instancia de Vue Toast Notification  con su configuracio para que pueda ser accedida desde cualquier componente de la aplicacion con inject (v453)
+app.provide("toast", $toast) // guardamos en un provide la instancia de Vue Toast Notification  con su configuracion para que pueda ser accedida desde cualquier componente de la aplicacion con inject (v453)
 
 app.use(createPinia())
 
