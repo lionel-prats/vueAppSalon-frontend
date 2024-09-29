@@ -16,11 +16,16 @@ export default {
         return api.post("/auth/login", data)
     },
 
-    // GET a http://localhost:4000/api/auth/user (v470)
+    // GET a http://localhost:4000/api/auth/user con token de autenticacion en el header (v470)
     // en la request a este endpoint pasamos en el header el token que nos retorna el endpoint POST .../auth/login cuando iniciamos sesion desde el form de login y que tenemos almacenado en localStorage (v470)
     // esta request la ejecutaremos desde \src\router\index.js cada vez que querramos acceder a una ruta para usuarios autenticados de nuestra app vue (v470)
     // tambien lo ejecutamos desde el store user (v471)
     auth() { 
+        return api.get("/auth/user")
+
+        /*
+        // hasta el v479 esta era la peticion. En el v480 aparece el tema de los interceptors de Axios y pasamos a centralizar el envio del token en el header de la request, en la instancia de Axios (en el archivo \src\lib\axios.js), para reutilizar ese codigo en las distintas peticiones y simplificar las funciones que hacen peticiones a rutas protegidas del backend (hay notas en v480, en el que Valdez explica el tema)
+        
         const token = localStorage.getItem("AUTH_TOKEN") // intentamos acceder al token almacenado en localStorage
         return api.get(
             "/auth/user", 
@@ -32,5 +37,7 @@ export default {
                 }
             }
         )
+
+        */
     },
 }

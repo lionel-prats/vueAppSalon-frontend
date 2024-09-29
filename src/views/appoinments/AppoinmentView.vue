@@ -70,16 +70,23 @@
                     <!-- prop :disable-date="false" -> la fecha estara habilitada (v430) -->
                     <!-- prop :disable-date="true" -> la fecha estara deshabilitada (v430) -->
                 </div>
-                <!-- fon calendario datePicker (v425) -->
+                <!-- fin calendario datePicker (v425) -->
 
-                <div class="flex-1 grid grid-cols-1 xl:grid-cols-2 gap-5 mt-5 lg:mt-0">
+                <!-- horarios disponibles -->
+                <div
+                    v-if="appoinments.isDateSelected" 
+                    class="flex-1 grid grid-cols-1 xl:grid-cols-2 gap-5 mt-5 lg:mt-0"
+                >
                     <button
-                        class="block rounded-lg text-xl font-black p-3"
+                        class="block rounded-lg text-xl font-black p-3 disabled:opacity-10"
                         v-for="hour in appoinments.hours"
                         @click="appoinments.time = hour"  
                         :class="appoinments.time === hour ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'" 
+                        :disabled="appoinments.disabledTime(hour)"
                     >{{ hour }}</button>
                 </div>
+                <!-- fin horarios disponibles -->
+
             </div>
             <div 
                 class="flex justify-end"
