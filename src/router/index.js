@@ -7,11 +7,14 @@ import AuthAPI from "@/api/AuthAPI"
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+
+    // para que necesito este path?
     {
-      path: "/",
+      path: "/", // http://localhost:5173/ (habria que ver la forma de que el acceso a esta ruta desde el navegador haga una redireccion porque aca no se renderiza nada util)
       name: "home",
       component: HomeView
     },
+    // FIN para que necesito este path?
 
     // URLs privadas
     {
@@ -20,29 +23,54 @@ const router = createRouter({
       component: AppoinmentsLayout, 
       meta: { requiresAuth: true }, // Route Meta Field (guard de navegación para restringir el acceso a esta url y a todas las url hijas) (v465)
       children: [ 
+        
         {
-          path: "", // http://localhost:5173/reservaciones (v464)
+          path: "", // http://localhost:5173/reservaciones (listado de citas de un usuario autenticado) (v464)
           name: "my-appoinments",
           component: () => import("@/views/appoinments/MyAppoinmentsView.vue"), 
         },
+        
+        // bloque de rutas para reservar una nueva cita
         {
-          path: "nueva", // http://localhost:5173/reservaciones/nueva
+          path: "nueva",
           component: () => import("@/views/appoinments/NewAppoinmentLayout.vue"), 
           children: [
             {
-              path: "",
+              path: "", // http://localhost:5173/reservaciones/nueva (servicios seleccionables en la seccion para crear una nueva cita)
               name: "new-appoinment",
               component: () => import("@/views/appoinments/ServicesView.vue"), 
             },
             {
-              path: "detalles", // http://localhost:5173/reservaciones/nueva/detalles
+              path: "detalles", // http://localhost:5173/reservaciones/nueva/detalles (seleccionar fecha y hora en la seccion para crear una nueva cita)
               name: "appoinment-details",
               component: () => import("@/views/appoinments/AppoinmentView.vue"), 
             },
           ]
         },
+        // FIN bloque de rutas para reservar una nueva cita
+
+        // bloque de rutas para editar una cita ya existente (v490)
+        {
+          path: ":id/editar",
+          component: () => import("@/views/appoinments/EditAppoinmentLayout.vue"), 
+          children: [
+            {
+              path: "", // http://localhost:5173/reservaciones/:id_cita/editar (modificar servicios en la seccion para editar una cita existente)
+              name: "edit-appoinment",
+              component: () => import("@/views/appoinments/ServicesView.vue"), 
+            },
+            {
+              path: "detalles", // http://localhost:5173/reservaciones/:id_cita/detalles (modificar fecha y hora en la seccion para editar una cita existente)
+              name: "edit-appoinment-details",
+              component: () => import("@/views/appoinments/AppoinmentView.vue"), 
+            },
+          ]
+        },
+        // FIN bloque de rutas para editar una cita ya existente (v490)
+
       ]
     },
+    // FIN URLs privadas
 
     // URLs publicas
     {
@@ -67,6 +95,8 @@ const router = createRouter({
         },
       ]
     },
+    // FIN URLs publicas
+
   ]
 })
 

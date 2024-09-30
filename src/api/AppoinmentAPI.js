@@ -32,4 +32,9 @@ export default {
     getUserAppoinments(userId) { 
         return api.get(`/users/${userId}/appoinments`)
     },
+    
+    // GET al endpoint protegido http://localhost:4000/api/appoinments/:id_cita para obtener una cita por id de cita, con token de usuario autenticado en el header (v493)
+    getById(id) { 
+        return api.get(`/appoinments/${id}`)
+    },
 }

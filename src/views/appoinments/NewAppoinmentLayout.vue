@@ -12,13 +12,13 @@
                 :to="{name:'new-appoinment'}"
                 class="flex-1 text-center p-3 uppercase font-extrabold hover:bg-blue-600 hover:text-white"
                 :class="[route.name === 'new-appoinment' ? 'bg-blue-500 text-white' : 'bg-white text-blue-500']"
-            >Servicios</RouterLink>
+            >Servicios <span class="text-black block normal-case">(desde NewAppoinmentLayout.vue)</span></RouterLink>
             
             <RouterLink
                 :to="{name:'appoinment-details'}"
                 class="flex-1 text-center p-3 uppercase font-extrabold hover:bg-blue-600 hover:text-white"
                 :class="[route.name === 'appoinment-details' ? 'bg-blue-500 text-white' : 'bg-white text-blue-500']"
-            >Cita y Resumen</RouterLink>
+            >Cita y Resumen <span class="text-black block normal-case">(desde NewAppoinmentLayout.vue)</span></RouterLink>
         
         </nav>
         <div class="space-y-5">
