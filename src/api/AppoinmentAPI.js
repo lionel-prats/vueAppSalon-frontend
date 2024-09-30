@@ -26,5 +26,10 @@ export default {
     // GET a http://localhost:4000/api/appoinments?date=dd/mm/yyyy con token de autenticacion en el header (v480)
     getByDate(date) { 
         return api.get(`/appoinments?date=${date}`)
-    }
+    },
+    
+    // GET a http://localhost:4000/api/users/:id_user/appoinments para obtener las citas de un usuario, con token de autenticacion en el header y acceso permitido desde el back solo si el usuario autenticado es el propietario de las citas (v486)
+    getUserAppoinments(userId) { 
+        return api.get(`/users/${userId}/appoinments`)
+    },
 }
