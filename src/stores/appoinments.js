@@ -2,16 +2,19 @@ import { ref, computed, onMounted, inject, watch } from "vue"
 import { defineStore } from "pinia"
 import { useRouter } from "vue-router"
 import AppoinmentAPI from "@/api/AppoinmentAPI" // v475
-import { convertToISO } from "@/helpers/date" // v476
+import { convertToISO, convertToDDMMYYYY } from "@/helpers/date" // v476|v496
+import { useUserStore } from "@/stores/user" // v499
 
 export const useAppoinmentsStore = defineStore("appoinments", () => {
     
     const router = useRouter()
     const toast = inject("toast")
+    const user = useUserStore() // v499
 
     // STATE vvv
+    const appoinmentId = ref("") // state para identificar si estamos intentando editar una cita existente o crear una cita nueva (este state almacenará el id de una cita que se esta queriendo editar, por lo tanto que esté o no vacío nos servirá para detectar eso) (v497)
     const services = ref([]) // state para almacenar los servicios que seleccionó el usuario para una nueva cita
-    const date = ref("") // state para almacenar la fecha seleccionada por el usuario 
+    const date = ref("") // state para almacenar la fecha seleccionada por el usuario en el calendario (originalmente se almacena en formato string "dd/mm/yyyy")
     const hours = ref([]) // state para almacenar los horarios de reservacion de citas definidos por el admin y renderizarlos en pantalla
     const time = ref("") // state para almacenar el horario seleccionado por el usuario
     const appoinmentsByDate = ref([]) // state para almacenar los horarios ya ocupados para una fecha determinada (request a la API) (v482)
@@ -33,10 +36,31 @@ export const useAppoinmentsStore = defineStore("appoinments", () => {
         if(date.value === "") return
         
         const { data } = await AppoinmentAPI.getByDate(date.value)
-        appoinmentsByDate.value = data
+        
+        if(appoinmentId.value) { 
+            // estamos intentando editar una cita ya existente, entonces inhabilito todos los horarios ya ocupados para la fecha que eligió el usuario, MENOS la fecha que ya etaba seleccionada para esta cita, la cual mantento habilitada para que la pueda volver a elegir (v497)
+            appoinmentsByDate.value = data.filter( appoinment => appoinment._id !== appoinmentId.value)
+
+            // como estamos intentando editar una cita que ya tiene un horario preseleccionado, almacenamos ese hortario en el state para que sea el horario seleccionado por default en la fecha default de la cita (v497)
+            time.value = data.filter( appoinment => appoinment._id === appoinmentId.value)[0].time
+            
+        } else { 
+            // estamos intentando crear una cita nueva, entonces inhabilito todos los horarios ya ocupados para la fecha que eligió el usuario (v497)
+            appoinmentsByDate.value = data
+        }
     })
 
     // ACTIONS vvv
+
+    // esta funcion carga en el state la data de una cita editar a partir de la decision del usuario autenticado de editar alguna de sus citas ya reservadas (v495)
+    function setSelectedAppoinment(appoinment) {
+        services.value = appoinment.services
+        date.value = convertToDDMMYYYY(appoinment.date)
+        time.value = appoinment.time 
+        appoinmentId.value = appoinment._id
+    }
+
+    // funcion para agregar un servicio al state cuando el usuario lo selecciona mientras esta creando una nueva cita 
     function onServiceSelected(service) {
         if(services.value.some(selectedService => selectedService._id === service._id)) {
             services.value = services.value.filter(selectedService => selectedService._id !== service._id)
@@ -48,29 +72,49 @@ export const useAppoinmentsStore = defineStore("appoinments", () => {
             services.value.push(service)
         }
     }
-    async function createAppoinment() { // funcion para hacer un INSERT en appoinments
+    
+    // funcion para hacer un INSERT o un UPDATE en appoinments (funcion ejecutada desde el componente reutilzable \src\views\appoinments\AppoinmentView.vue)
+    async function saveAppoinment() { 
+
         const appoinment = {
             services: services.value.map( service => service._id),
             date: convertToISO(date.value),
             time: time.value,
             totalAmount: totalAmount.value, // reutn del computedProperty totalAmount (?)
         }
-        try {
-            const { data } = await AppoinmentAPI.create(appoinment) // POST a http://localhost:4000/api/appoinment (v475)
-            toast.open({
-                message: data.msg,
-                type: "success",
-            })
-            clearAppoinmentData() // reiniciamos todo el state relacionado a la cita creada luego del INSERT de la misma en DB (v477)
-            router.push({ name: "my-appoinments" })
-        } catch (error) {
-            console.log(error);
+
+        if(appoinmentId.value) {
+            try {
+                const { data } = await AppoinmentAPI.update(appoinmentId.value, appoinment) // PUT a http://localhost:4000/api/appoinments/:id_cita (v498)
+                toast.open({
+                    message: data.msg,
+                    type: "success",
+                })
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            try {
+                const { data } = await AppoinmentAPI.create(appoinment) // POST a http://localhost:4000/api/appoinment (v475)
+                toast.open({
+                    message: data.msg,
+                    type: "success",
+                })
+            } catch (error) {
+                console.log(error);
+            }
         }
-        
+
+        // luego de cada INSERT o UPDATE de cita, actualizamos el state con las citas de un usuario (ejecutamos esta accion del store user que se encarga de cargarlas en el state mediante una peticion a la API) para que se renderizee el listado actualizado en tiempo real en el componente \src\views\appoinments\MyAppoinmentsView.vue (v499)
+        user.getUserAppoinments()
+
+        clearAppoinmentData() // reiniciamos todo el state relacionado a la cita creada o editada luego del INSERT o el UPDATE de la misma en DB (v477)
+        router.push({ name: "my-appoinments" })
     }
 
     // funcion para reiniciar todo el state relacionado a la cita creada luego del INSERT de la misma en DB (v477)
     function clearAppoinmentData() {
+        appoinmentId.value = ""
         services.value = []
         date.value = ""
         time.value = ""
@@ -130,7 +174,9 @@ export const useAppoinmentsStore = defineStore("appoinments", () => {
         disabledTime,
 
         // actions
+        setSelectedAppoinment,
         onServiceSelected,
-        createAppoinment,
+        saveAppoinment,
+        clearAppoinmentData,
     }
 })

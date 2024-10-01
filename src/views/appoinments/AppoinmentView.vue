@@ -95,7 +95,7 @@
                 <button 
                     type="button"
                     class="w-full lg:w-auto bg-blue-500 p-3 rounded-lg font-black text-white"    
-                    @click="appoinments.createAppoinment"
+                    @click="appoinments.saveAppoinment"
                 >Confirmar Reservación</button>
             </div>
         </div>

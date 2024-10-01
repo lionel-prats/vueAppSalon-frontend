@@ -69,5 +69,6 @@ export const useUserStore = defineStore("user", () => {
 
         // actions
         logout,
+        getUserAppoinments,
     }
 })

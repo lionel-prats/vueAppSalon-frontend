@@ -37,4 +37,9 @@ export default {
     getById(id) { 
         return api.get(`/appoinments/${id}`)
     },
+    
+    // PUT al endpoint protegido http://localhost:4000/api/appoinments/:id_cita para UDATEAR una cita existente, con token de usuario autenticado en el header (v498)
+    update(id, data) { 
+        return api.put(`/appoinments/${id}`, data)
+    },
 }

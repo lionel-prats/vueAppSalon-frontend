@@ -1,5 +1,14 @@
 <script setup>
+    import { onMounted } from "vue" // v500
     import { useRoute } from "vue-router"
+    import { useAppoinmentsStore } from "@/stores/appoinments" // v500
+    
+    const appoinments = useAppoinmentsStore() // v500
+
+    // cada vez que el usuario navega a "Nueva Cita" (http://localhost:5173/reservaciones/nueva) y se carga este componente reiniciamos el state del store appoinments para evitar fallas en la experiencia de usuario (reveer video si no se entiende) (v500) 
+    onMounted( () => {
+        appoinments.clearAppoinmentData() 
+    })
 
     const route = useRoute()
     

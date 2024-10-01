@@ -2,17 +2,23 @@
     import { onMounted } from "vue"
     import { useRoute, useRouter } from "vue-router"
     import AppoinmentAPI from "@/api/AppoinmentAPI"
+    import { useAppoinmentsStore } from "@/stores/appoinments"
     
+    // vue-router vvv
     const route = useRoute()
     const router = useRouter()
-
+    
+    // stores vvv
+    const appoinments = useAppoinmentsStore()
+    
+    // JS vvv
     const { id } = route.params // extraigo de la URL el id de la cita a editar (v491)   
 
-    // apenas se cargue este componente obtengo la data de la cita que se esta queriendo editar (v491)
+    // apenas se cargue este componente cargo en el state la data de la cita que se esta queriendo editar (v491)
     onMounted( async () => {
         try {
             const { data } = await AppoinmentAPI.getById(id)
-            console.log(data);
+            appoinments.setSelectedAppoinment(data)
         } catch (error) {
             router.push({ name: "my-appoinments"})
         }
