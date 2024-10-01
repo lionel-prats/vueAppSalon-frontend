@@ -42,4 +42,9 @@ export default {
     update(id, data) { 
         return api.put(`/appoinments/${id}`, data)
     },
+    
+    // DELETE al endpoint protegido http://localhost:4000/api/appoinments/:id_cita para eliminar una cita de la DB, con token de usuario autenticado en el header (v501)
+    delete(id) { 
+        return api.delete(`/appoinments/${id}`)
+    },
 }

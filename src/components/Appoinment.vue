@@ -1,12 +1,17 @@
 <script setup>
+    import { useAppoinmentsStore } from "@/stores/appoinments"
+    
     import { displayDate } from "@/helpers/date" // v488
     import { formatCurrency } from "@/helpers" // v489
-
+    
     defineProps({
         appoinment: {
             type: Object
         }
     })
+
+    const appoinments = useAppoinmentsStore()
+
 </script>
 
 <template>
@@ -32,6 +37,7 @@
            
             <button
                 class="bg-red-600 rounded-lg p-3 text-white text-sm uppercase font-black flex-1 md:flex-none"
+                @click="appoinments.cancelAppoinment(appoinment._id)"
             >Cancelar Cita</button>
         </div>
 

@@ -120,6 +120,28 @@ export const useAppoinmentsStore = defineStore("appoinments", () => {
         time.value = ""
     }
 
+    // funcion para eliminar una cita de la DB (v501)
+    async function cancelAppoinment(id) { 
+        if(confirm("¿Deseas cancelar esta cita?")) {
+            try {
+                const { data } = await AppoinmentAPI.delete(id)
+                toast.open({
+                    message: data.msg,
+                    type: "success",
+                })
+                
+                // actualizo en tiempo real el state con el listado de citas del usuario luego del DELETE de una cita (v501) 
+                user.userAppoinments.value = user.userAppoinments.value.filter( appoinment => appoinment._id !== id)
+                
+            } catch (error) {
+                toast.open({ 
+                    message: error.response.data.msg,
+                    type: "error",
+                })
+            }
+        }   
+    }
+
     // GETERS vvv
     const isServiceSelected = computed( () => {
         return (id) => services.value.some(service => service._id === id)
@@ -178,5 +200,6 @@ export const useAppoinmentsStore = defineStore("appoinments", () => {
         onServiceSelected,
         saveAppoinment,
         clearAppoinmentData,
+        cancelAppoinment,
     }
 })
