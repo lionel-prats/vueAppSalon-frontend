@@ -17,7 +17,7 @@
                 type: "success",
             })
 
-            // luego del INSERT en DB ejecutamos la funcion reset() de formkit para reiniciar el form de registro de usuario (v454)
+            // luego del INSERT en DB, ejecutamos la funcion reset() de formkit para reiniciar el form de registro de usuario (v454)
             // como se ve, tenemos que pasarle el id que definimos en el form, para que reset() lo identifique y lo reinicie (v454)
             reset("registerForm")
             
