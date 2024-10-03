@@ -40,4 +40,20 @@ export default {
 
         */
     },
+
+    // POST a http://localhost:4000/api/auth/forgot-password (recuperar password) (v508)
+    forgotPassword(data) { 
+        return api.post("/auth/forgot-password", data)
+    },
+    
+    // GET a http://localhost:4000/api/auth/forgot-password/:token (v511)
+    verifyPasswordResetToken(token) { 
+        return api.get(`/auth/forgot-password/${token}`)
+    },
+    
+    // POST a http://localhost:4000/api/auth/forgot-password/:token (v513)
+    updatePassword(token, data) { 
+        return api.post(`/auth/forgot-password/${token}`, data)
+    },
+
 }

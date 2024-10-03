@@ -93,6 +93,16 @@ const router = createRouter({
           name: "login",
           component: () => import("@/views/auth/LoginView.vue"),
         },
+        {
+          path: "olvide-password", // http://localhost:5173/auth/olvide-password (form para recuperar password al que se accede desde la app vue y en el que el usuario submitea su email para que le llegue el enlace de recuperacion de password) (v506)
+          name: "forgot-password",
+          component: () => import("@/views/auth/ForgotPasswordView.vue"),
+        },
+        {
+          path: "olvide-password/:token", // http://localhost:5173/auth/olvide-password/:token (form para crear un nuevo password al que el usuario accede desde el mail que le llegó, y en el que podrá submitear el nuevo password) (v506)
+          name: "new-password",
+          component: () => import("@/views/auth/NewPasswordView.vue"),
+        },
       ]
     },
     // FIN URLs publicas
