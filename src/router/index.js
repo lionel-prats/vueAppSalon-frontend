@@ -16,12 +16,29 @@ const router = createRouter({
     },
     // FIN para que necesito este path?
 
-    // URLs privadas
+    // URLs privadas vvv
+
+    // exclusivas administradores (v516)
+    {
+      path: "/admin",
+      name: "admin",
+      component: () => import("@/views/admin/AdminLayout.vue"),
+      meta: { soloAdministradores: true }, // guard de navegacion para restrinjir el acceso a este grupo de rutas solo a usuarios autenticados y administradores (v517)
+      children: [
+        {
+          path: "", // http://localhost:5173/admin (ponel de administracion) (v518)
+          name: "admin-appoinments",
+          component: () => import("@/views/admin/AppoinmentsView.vue"),
+        }
+      ],
+    },
+
+    // usuarios autenticados en general
     {
       path: "/reservaciones",
       name: "appoinments",
       component: AppoinmentsLayout, 
-      meta: { requiresAuth: true }, // Route Meta Field (guard de navegación para restringir el acceso a esta url y a todas las url hijas) (v465)
+      meta: { requiresAuth: true }, // Route Meta Field (guard de navegación para restringir el acceso a esta grupo de rutas solo a usuarios autenticados - administradores y no administradores -) (v465)
       children: [ 
         
         {
@@ -110,7 +127,7 @@ const router = createRouter({
   ]
 })
 
-// funcion para manejar el acceso a las diferentes rutas de la aplicacion (v465)
+// guard de navegacion para restrinjir el acceso a rutas protegidas de mi app solo a usuarios autenticados (administradores y no administradores) (v465)
 router.beforeEach( async(to, from, next) => {
   // to = pagina a donde vamos
   // from = de donde venimos
@@ -125,8 +142,22 @@ router.beforeEach( async(to, from, next) => {
     // bloque para hacer la peticion GET a http://localhost:4000/api/auth/ incluyendo el token que tenemos almacenado en localStorage, para definir si permitimos o no el acceso a la ruta a la que se esta queriendo acceder desde el navegador (v470) 
     try {
       // si el backend nos retorno un status 200 con los datos del usuario, significa que todo esta bien, asi que permitimos el acceso a la ruta a la que se esta queriendo acceder desde el navegador (v470)
-      await AuthAPI.auth()
-      next()
+      const { data } = await AuthAPI.auth()
+
+      // bloque que valida si el usuario auteticado es admin o no (v515)
+      if(data.admin) {
+        
+        // si el usuario que se acaba de autenticar (submit del form de login en \src\views\auth\LoginView.vue) es admin, me interpongo en el flujo del componente para redirijir al administrador al panel de administracion (http://localhost:5173/admin) (v515) 
+        next({ name: "admin" })
+        
+      } else {
+        
+        // si el usuario que se acaba de autenticar (submit del form de login en \src\views\auth\LoginView.vue) NO es admin, no intervengo en el flujo del componente (v515) 
+        next()
+
+      }
+
+
     } catch {
       // si la ejecucion entra en el catch, significa que el backend nos retrorno un 403 (forbidden) entonces redirigimos al usuario al form de login
       next({ name: "login" })
@@ -136,6 +167,24 @@ router.beforeEach( async(to, from, next) => {
   } else { // si false, la url a la que se esta queriendo acceder desde el navegador no esta protegida, mostramos la vista
     next()
   }
+})
+
+// guard de navegacion para restrinjir el acceso a rutas de administrador solo a usuarios autenticados y administradores (v517)
+router.beforeEach( async(to, from, next) => {
+  
+  const soloAdministradores = to.matched.some( (url) => url.meta.soloAdministradores )
+  
+  if(soloAdministradores) { 
+    try {
+      await AuthAPI.admin()
+      next()
+    } catch (error) {
+      next({ name: "login" })
+    }
+  } else {
+    next()
+  }
+
 })
 
 export default router

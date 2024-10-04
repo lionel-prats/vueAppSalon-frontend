@@ -41,6 +41,12 @@ export default {
         */
     },
 
+    // GET a http://localhost:4000/api/auth/admin con el token de autenticacion en el header (v517)
+    // con la respuesta de la request a este endpoint validamos si el usuario autenticado es admin o no, y con eso restringirle o no el acceso a rutas exclusivas para administradores en nuestra app Vue (v517)
+    admin() { 
+        return api.get("/auth/admin")
+    },
+
     // POST a http://localhost:4000/api/auth/forgot-password (recuperar password) (v508)
     forgotPassword(data) { 
         return api.post("/auth/forgot-password", data)
